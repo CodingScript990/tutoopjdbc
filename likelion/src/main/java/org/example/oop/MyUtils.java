@@ -1,4 +1,4 @@
-package org.example;
+package org.example.oop;
 
 import java.io.PrintStream;
 

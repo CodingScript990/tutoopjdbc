@@ -1,5 +1,6 @@
-package org.example;
+package org.example.oop;
 
+import org.example.oop.MyUtils;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
