@@ -6,10 +6,26 @@ public class Main {
   public static void main(String[] args) {
 
     // 인스턴스화 참조타입[Main] / 참조변수[main]
-    Main main = new Main();
+    //Main main = new Main();
 
     // printYear => input value test
-    main.printYear(1700);
+    //printYear(1700);
+    game369();
+  }
+
+  // game369 method
+  public static void game369() {
+    for (int cnt = 0; cnt < 100; cnt++) {
+      System.out.print(cnt + "");
+
+      int tenNum = cnt / 10; // 십의 자리
+      int oneNum = cnt % 10; // 일의 자리
+
+      if (tenNum % 3 == 0 && tenNum != 0) System.out.print("*");
+      if (oneNum % 3 == 0 && oneNum != 0) System.out.print("*");
+
+      System.out.println();
+    }
   }
 
   // Refactoring
@@ -30,7 +46,19 @@ public class Main {
     if (year % 100 == 0) return false; // 100로 나눈 윤년 값은 false
     if (year % 4 == 0) return true; // 4로 나눈 윤년 값은 true
 
-
     return false;
+  }
+
+  // isGame369 method => 재귀호출
+  public static String isGame369(int cnt) {
+
+    int tenNum = cnt / 10; // 십의 자리
+    int oneNum = cnt % 10; // 일의 자리
+
+    String result = (oneNum % 3 == 0 && oneNum != 0) ? "*" : "";
+
+    if (tenNum == 0) return result;
+
+    return result + isGame369(tenNum);
   }
 }
