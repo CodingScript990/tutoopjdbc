@@ -1,66 +1,137 @@
 package org.example.db;
 
-import java.sql.*;
+import org.example.model.BaseDAO;
+import org.example.model.Person;
 
-public class DBMain {
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+// BaseDAO 상속 받아 Connection 기능을 사용함
+public class DBMain extends BaseDAO {
     public static void main(String[] args) {
 
-        initPerson(); // 초기화 단계
+        DBMain dbMain = new DBMain(); // 인스턴스화
+
+        dbMain.initPerson(); // 초기화 단계(인스턴스 객체로 호출)
+
+        System.out.println(dbMain.insertPerson("leo"));
+        System.out.println(dbMain.insertPerson("yui"));
+
+        List<Person> personList = dbMain.findAllPerson();
+
+        System.out.println(personList.toString());
+        System.out.println(dbMain.findByNamePerson("leo"));
+
     }
 
-    // initPerson method => Refactoring
-    private static void initPerson() {
-        Connection conn = null;
-        Statement smt = null;
-        PreparedStatement psmt = null;
-        ResultSet rs = null;
-        try {
-            // create a database connection
-            conn = DriverManager.getConnection("jdbc:sqlite:world.db");
-            smt = conn.createStatement();
-            smt.setQueryTimeout(30);  // set timeout to 30 sec.
+    //
+    private Person findByNamePerson(String pName) {
 
-            smt.executeUpdate("drop table if exists person");
-            smt.executeUpdate("create table person (id integer, name string)");
-            smt.executeUpdate("insert into person values(1, 'leo')");
-            smt.executeUpdate("insert into person values(2, 'yui')");
-            rs = smt.executeQuery("select * from person");
-            while (rs.next()) {
-                // read the result set
-                System.out.println("name = " + rs.getString("name"));
-                System.out.println("id = " + rs.getInt("id"));
-            }
-        } catch (SQLException e) {
-            // if the error message is "out of memory",
-            // it probably means no database file is found
-            System.err.println(e.getMessage());
-        } finally {
-            try {
-                if (conn != null)
-                    conn.close();
-            } catch (SQLException e) {
-                // connection close failed.
-                System.err.println(e.getMessage());
-            }
-        }
-    }
+        String sql = "select id, name from person where name = ?";
 
-    private static void gatCodeName() throws SQLException {
-        String sql = "select code, name from country order by code, name";
-        Connection conn = null;
-        PreparedStatement psmt = null;
-        ResultSet rs = null;
         try {
+            getConn();
             psmt = conn.prepareStatement(sql);
+            psmt.setString(1, pName);
             rs = psmt.executeQuery();
-            while (rs.next()) {
-                System.out.println(rs.getString("result"));
-                System.out.print(rs.getString("code") + "\t");
-                System.out.println(rs.getString("name"));
+
+            if (rs.next()) {
+                int id = rs.getInt("id");
+                String name = rs.getString("name");
+                return new Person(id, name);
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            close();
+        }
+        // result 를 반환함
+        return null;
+    }
 
+    // findAllPerson method => Refactoring
+    private List<Person> findAllPerson() {
+        List<Person> result = new ArrayList<>();
+
+        String sql = "select id, name from person";
+
+        try {
+            getConn();
+            psmt = conn.prepareStatement(sql);
+            rs = psmt.executeQuery();
+
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String name = rs.getString("name");
+                result.add(new Person(id, name));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            close();
+        }
+        // result 를 반환함
+        return result;
+    }
+
+    // initPerson method => Refactoring
+    private int insertPerson(String name) {
+        int cnt = 0;
+        String sql = "insert into person(name) values(?)";
+        try {
+            getConn();
+            psmt = conn.prepareStatement(sql);
+            psmt.setString(1, name);
+            cnt = psmt.executeUpdate();
+        }
+        catch(SQLException e) {
+            System.err.println(e.getMessage());
+        }
+        finally {
+            close();
+        }
+        return cnt;
+    }
+
+
+    // initPerson method => Refactoring
+    private void initPerson() {
+        String sql = """
+                create table person (
+                id integer primary key autoincrement,
+                name string
+                )
+                """;
+        try {
+            getConn();
+            smt = conn.createStatement();
+            smt.executeUpdate("drop table if exists person");
+            smt.executeUpdate(sql);
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        } finally {
+            close();
+        }
+    }
+
+    // getCodeName method => Refactoring
+    private void gatCodeName() {
+        String sql = "select code, name from country order by code, name";
+
+        try {
+            getConn();
+            psmt = conn.prepareStatement(sql);
+            rs = psmt.executeQuery();
+
+            while (rs.next()) {
+                System.out.print( rs.getString("code") + "\t");
+                System.out.println( rs.getString("name"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            close();
         }
     }
 }
