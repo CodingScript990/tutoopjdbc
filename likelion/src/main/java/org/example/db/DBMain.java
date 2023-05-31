@@ -21,7 +21,7 @@ public class DBMain extends BaseDAO {
         List<Person> personList = dbMain.findAllPerson();
 
         System.out.println(personList.toString());
-        System.out.println(dbMain.findByNamePerson("leo"));
+        System.out.println(dbMain.findByNamePerson("bab"));
 
     }
 
@@ -46,7 +46,7 @@ public class DBMain extends BaseDAO {
         } finally {
             close();
         }
-        // result 를 반환함
+        // null 를 반환함
         return null;
     }
 
