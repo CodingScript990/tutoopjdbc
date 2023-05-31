@@ -6,6 +6,7 @@ import org.example.model.Person;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 // BaseDAO 상속 받아 Connection 기능을 사용함
 public class DBMain extends BaseDAO {
@@ -22,10 +23,39 @@ public class DBMain extends BaseDAO {
 
         System.out.println(personList.toString());
         System.out.println(dbMain.findByNamePerson("bab"));
+        System.out.println(dbMain.findByNameOptionalPerson("bab"));
 
     }
 
-    //
+    // findByNameOptionalPerson method => Refactoring
+    private Optional<Person> findByNameOptionalPerson(String pName) {
+
+        String sql = "select id, name from person where name = ?";
+
+        try {
+            getConn();
+            psmt = conn.prepareStatement(sql); // sql문 실행
+            psmt.setString(1, pName); // sql 문에서 data
+            rs = psmt.executeQuery(); // 결과를 실행
+
+            if (rs.next()) {
+                // get int => id
+                int id = rs.getInt("id");
+                // get String => name
+                String name = rs.getString("name");
+                // Optional.of Type 으로 변경
+                return Optional.of(new Person(id, name));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            close();
+        }
+        // Optional.empty() 를 반환함
+        return Optional.empty();
+    }
+
+    // findByNamePerson method => Refactoring
     private Person findByNamePerson(String pName) {
 
         String sql = "select id, name from person where name = ?";
