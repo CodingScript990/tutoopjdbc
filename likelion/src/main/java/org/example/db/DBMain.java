@@ -4,10 +4,7 @@ import org.example.model.BaseDAO;
 import org.example.model.Person;
 import org.example.model.PersonDAO;
 
-import java.sql.*;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 // BaseDAO 상속 받아 Connection 기능을 사용함
 public class DBMain extends BaseDAO {
