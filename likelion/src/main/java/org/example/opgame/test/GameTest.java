@@ -54,4 +54,22 @@ public class GameTest {
     public void testRandom() {
         System.out.println((int) (Math.random() * 10));
     }
+
+    // testMinus
+    @Test(testName = "Minus function")
+    public void testMinus() {
+        int max = 10;
+        int inputNumOne = (int) (Math.random() * max);
+        int inputNumTwo = (int) (Math.random() * max);
+
+        if (inputNumOne < inputNumTwo) {
+            int temp = inputNumOne;
+            inputNumOne = inputNumTwo;
+            inputNumTwo = temp;
+        }
+
+        System.out.printf("%d - %d = %d\n", inputNumOne, inputNumTwo, inputNumOne - inputNumTwo);
+
+        assertTrue(inputNumOne - inputNumTwo >= 0);
+    }
 }
